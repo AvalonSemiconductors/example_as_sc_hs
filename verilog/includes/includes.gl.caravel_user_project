@@ -15,9 +15,10 @@
 
 # Caravel user project includes	     
 -v $(USER_PROJECT_VERILOG)/gl/user_project_wrapper.v    
--v $(USER_PROJECT_VERILOG)/gl/user_proj_example.v
+-v $(USER_PROJECT_VERILOG)/gl/wrapped_tholin_riscv.v
+-v $(USER_PROJECT_VERILOG)/../dependencies/pdks/sky130A/libs.ref/sky130_as_sc_hs/verilog/sky130_as_sc_hs.v
 
--v $(USER_PROJECT_VERILOG)/gl/caravel_core.v
+-v $(USER_PROJECT_VERILOG)/../caravel/verilog/gl/caravel_core.v
 
 # default should be added according to the defaults used
 

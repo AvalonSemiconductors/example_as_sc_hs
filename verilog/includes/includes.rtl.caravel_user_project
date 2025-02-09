@@ -15,6 +15,7 @@
 
 # Caravel user project includes
 -v $(USER_PROJECT_VERILOG)/rtl/user_project_wrapper.v	     
--v $(USER_PROJECT_VERILOG)/rtl/user_proj_example.v
-
- 
+-v $(USER_PROJECT_VERILOG)/rtl/TholinRISCV/tholin_riscv.v
+-v $(USER_PROJECT_VERILOG)/rtl/TholinRISCV/wrapped_tholin_riscv.v
+-v $(USER_PROJECT_VERILOG)/rtl/uart.v
+-v $(USER_PROJECT_VERILOG)/rtl/spi.v

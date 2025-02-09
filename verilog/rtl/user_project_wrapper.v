@@ -86,8 +86,19 @@ wrapped_tholin_riscv wrapped_tholin_riscv(
 	.wb_clk_i(wb_clk_i),
 	.rst_n(io_in[0]),
 	.io_in(io_in[37:5]),
-	.io_oeb({io_oeb[0], io_oeb[37:5]}),
-	.custom_settings(la_data_in[1:0])
+	.irq(user_irq),
+	.io_out({io_out[4:0], io_out[37:5]}),
+	.io_oeb({io_oeb[4:0], io_oeb[37:5]}),
+	.custom_settings(la_data_in[1:0]),
+	.la_data_out(la_data_out),
+	
+	.wbs_dat_i(wbs_dat_i),
+	.wbs_dat_o(wbs_dat_o),
+	.wbs_ack_o(wbs_ack_o),
+	.wbs_cyc_i(wbs_cyc_i),
+	.wbs_stb_i(wbs_stb_i),
+	.wbs_we_i(wbs_we_i),
+	.wb_rst_i(wb_rst_i)
 );
 
 endmodule	// user_project_wrapper

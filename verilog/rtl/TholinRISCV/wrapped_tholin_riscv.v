@@ -7,11 +7,24 @@ module wrapped_tholin_riscv(
     input wb_clk_i,
     input rst_n,
     input [32:0] io_in,
-    output [33:0] io_oeb,
-    output [32:0] io_out,
-    input [1:0] custom_settings
+    output [37:0] io_oeb,
+    output [37:0] io_out,
+    input [1:0] custom_settings,
+    output [127:0] la_data_out,
+    
+    output [2:0] irq,
+    input [31:0] wbs_dat_i,
+    output reg [31:0] wbs_dat_o,
+    output reg wbs_ack_o,
+    input wbs_cyc_i,
+    input wbs_stb_i,
+    input wbs_we_i,
+    input wb_rst_i
 );
 assign io_oeb[33] = 1'b1;
+assign io_oeb[37:34] = 4'hF;
+assign io_out[37:33] = 5'h1A;
+assign irq = 3'h0;
 
 wire bus_dir;
 assign io_oeb[15:0] = {16{bus_dir}};
@@ -54,7 +67,30 @@ tholin_riscv tholin_riscv(
     .RXD(io_in[26]),
     .PORT_dir(PORT_dir),
     .PORT_out(io_out[32:27]),
-    .PORT_in(io_in[32:27])
+    .PORT_in(io_in[32:27]),
+    
+    .la_data_out(la_data_out),
+    .wishbone_in(wishbone_in),
+    .wishbone_out(wishbone_out)
 );
+
+wire wb_valid = wbs_cyc_i && wbs_stb_i;
+reg wb_feedback_delay;
+reg [31:0] wishbone_in;
+wire [31:0] wishbone_out;
+always @(posedge wb_clk_i) begin
+	if(wb_rst_i) begin
+		wbs_ack_o <= 1'b0;
+		wbs_dat_o <= 32'hFFFFFFFF;
+		wb_feedback_delay <= 1'b0;
+	end else begin
+		if(wb_valid && wb_feedback_delay && !wbs_ack_o) begin
+			if(wbs_we_i) wishbone_in <= wbs_dat_i;
+			else wbs_dat_o <= wishbone_out;
+		end
+		wb_feedback_delay <= wb_valid;
+		wbs_ack_o <= wb_feedback_delay;
+	end
+end
 
 endmodule

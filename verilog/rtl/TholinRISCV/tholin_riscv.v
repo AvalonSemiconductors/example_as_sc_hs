@@ -22,7 +22,11 @@ module tholin_riscv(
     input [5:0] PORT_in,
 
     input clk,
-    input rst_n
+    input rst_n,
+    
+    output [127:0] la_data_out,
+    input [31:0] wishbone_in,
+    output reg [31:0] wishbone_out
 );
 
 reg [2:0] irqs;
@@ -34,6 +38,20 @@ wire [1:0] highest_irq = irqs[2] ? 3 : (irqs[1] ? 2 : (irqs[0] ? 1 : 0));
 reg [1:0] current_irq;
 reg [31:0] PC;
 reg [31:0] PCE;
+
+assign la_data_out[31:0] = PC;
+assign la_data_out[32] = io_int_enable;
+assign la_data_out[33] = uart_int_enable;
+assign la_data_out[34] = timer_int_enable;
+assign la_data_out[36:35] = current_irq;
+assign la_data_out[39:37] = irqs;
+assign la_data_out[71:40] = instr;
+assign la_data_out[81:72] = {isALUreg, isALUimm, isBranch, isJALR, isJAL, isAUIPC, isLUI, isLoad, isStore, isSYSTEM};
+assign la_data_out[85:82] = cycle;
+assign la_data_out[117:86] = regs[1];
+assign la_data_out[118] = last_io_state;
+assign la_data_out[119] = LOAD_sign;
+assign la_data_out[127:120] = 8'hAB;
 
 //TIMERS
 reg [31:0] tmr0;
@@ -68,9 +86,9 @@ localparam DIV1 = 9;
 localparam DIV2 = 10;
 
 wire le_lo_pre = cycle == MEM1 || cycle == MEM4;
-assign le_lo = le_lo_pre && clk;
+assign le_lo = le_lo_pre && clk && rst_n && !last_le_lo;
 wire le_hi_pre = cycle == MEM2;
-assign le_hi = le_hi_pre && clk;
+assign le_hi = le_hi_pre && clk && rst_n && !last_le_hi;
 assign bus_dir = !(le_lo_pre || le_hi_pre || (!WEb));
 assign OEb = !((cycle == MEM3 || cycle == MEM5) && !is_write);
 wire WEb = !((cycle == MEM3 || cycle == MEM5) && is_write);
@@ -223,6 +241,18 @@ wire [31:0] a0 = regs[10];
 wire [31:0] a1 = regs[11];
 `endif
 
+reg last_le_lo;
+reg last_le_hi;
+always @(negedge clk) begin
+	if(!rst_n) begin
+		last_le_lo <= 1'b0;
+		last_le_hi <= 1'b0;
+	end else begin
+		last_le_lo <= le_lo_pre;
+		last_le_hi <= le_hi_pre;
+	end
+end
+
 reg mul_delay;
 wire [31:0] PC_next = PC + 4;
 wire [31:0] PC_jmp = PC + (isJAL ? Jimm : Bimm);
@@ -260,6 +290,7 @@ always @(posedge clk) begin
         mem_io <= 0;
         io_size <= 0;
         ret_cycle <= 0;
+        wishbone_out <= 32'h00000000;
     end else begin
         last_io_state <= PORT_in[5];
         if(!last_io_state && PORT_in[5] && io_int_enable) irqs[0] <= 1;
@@ -366,6 +397,10 @@ always @(posedge clk) begin
                     end
                     20: begin
                         if(!is_write) mem_io <= {8'h00, 8'h00, 8'h21, 8'h50};
+                    end
+                    21: begin
+						if(is_write) wishbone_out <= mem_io;
+						else mem_io <= wishbone_in;
                     end
                 endcase
                 cycle <= {1'b0, ret_cycle};

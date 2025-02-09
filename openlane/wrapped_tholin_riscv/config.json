@@ -53,7 +53,7 @@
         },
         "scl::sky130_as_sc_hs": {
             "CLOCK_PERIOD": 7,
-            "SYNTH_STRATEGY": "DELAY 2"
+            "SYNTH_STRATEGY": "DELAY 4"
         },
         "scl::sky130_fd_sc_ls": {
             "CLOCK_PERIOD": 10,
