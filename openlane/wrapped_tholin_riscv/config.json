@@ -13,15 +13,15 @@
     "CLOCK_PORT": "wb_clk_i",
     "CLOCK_NET": "wb_clk_i",
     "FP_SIZING": "absolute",
-    "DIE_AREA": "0 0 850 850",
+    "DIE_AREA": "0 0 1000 1000",
     "FP_PIN_ORDER_CFG": "dir::pin_order.cfg",
-    "MAX_TRANSITION_CONSTRAINT": 1.0,
-    "MAX_FANOUT_CONSTRAINT": 14,
-    "PL_TARGET_DENSITY": 0.4,
-    "PL_RESIZER_SETUP_SLACK_MARGIN": 0.3,
+    "MAX_TRANSITION_CONSTRAINT": 0.5,
+    "MAX_FANOUT_CONSTRAINT": 12,
+    "PL_TARGET_DENSITY": 0.5,
+    "PL_RESIZER_SETUP_SLACK_MARGIN": 0.2,
     "GLB_RESIZER_SETUP_SLACK_MARGIN": 0.15,
     "GLB_RESIZER_HOLD_SLACK_MARGIN": 0.15,
-    "PL_RESIZER_HOLD_SLACK_MARGIN": 0.3,
+    "PL_RESIZER_HOLD_SLACK_MARGIN": 0.2,
     "MAGIC_DEF_LABELS": 0,
     "RUN_KLAYOUT_DRC": 1,
     "SYNTH_BUFFERING": 0,
@@ -52,7 +52,7 @@
             "CLOCK_PERIOD": 10
         },
         "scl::sky130_as_sc_hs": {
-            "CLOCK_PERIOD": 7,
+            "CLOCK_PERIOD": 8,
             "SYNTH_STRATEGY": "DELAY 4"
         },
         "scl::sky130_fd_sc_ls": {
